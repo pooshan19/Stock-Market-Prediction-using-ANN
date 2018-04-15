@@ -1,0 +1,403 @@
+package stock_market1;
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+import javax.swing.JButton;
+import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.text.NumberFormat;
+import org.encog.engine.network.activation.ActivationReLU;
+import org.encog.engine.network.activation.ActivationSigmoid;
+import org.encog.ml.data.MLData;
+import org.encog.ml.data.MLDataSet;
+import org.encog.ml.data.basic.BasicMLData;
+import org.encog.ml.data.temporal.TemporalDataDescription;
+import org.encog.ml.data.temporal.TemporalMLDataSet;
+import org.encog.ml.data.temporal.TemporalPoint;
+import org.encog.neural.networks.BasicNetwork;
+import org.encog.neural.networks.layers.BasicLayer;
+import org.encog.neural.networks.training.Train;
+import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
+import org.encog.util.EngineArray;
+import org.encog.util.arrayutil.NormalizeArray;
+import javax.swing.JTextField;
+
+public class swinging 
+{
+
+	private JFrame frame;
+	public  static double pass2[]=new double[3];
+	public static double acc[]=new double[3];
+	public static void main(String[] args)throws Exception
+	{
+		swinging sunspot = new swinging();
+		sunspot.run();
+		int k=EVALUATE_START+1;
+		int k2=0;
+		
+		while(k<=EVALUATE_END)
+		{
+            double f5=(-1)*(((lowest-highest)*predict2[k2])-lowest);
+			
+			
+			pass2[k2]=f5;
+			System.out.println(pass2[k2]);
+			double f55=f5-low2[k];
+			double f56=Math.abs(f55);
+			double error2=((f56)/(low2[k]))*100;
+			double accuracy2=100-error2;
+			acc[k2]=accuracy2;
+			System.out.println("\t from previous 18 days of data  "+f5);
+		k2++;
+		k++;
+		
+		}
+		EventQueue.invokeLater(new Runnable() 
+		{
+			public void run()
+			{
+				try 
+				{
+					swinging window = new swinging();
+					window.frame.setVisible(true);
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/*Initialize the contents of the frame.*/
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		JButton btnNewButton = new JButton("PREDICT");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				double al;
+				al=pass2[0];
+				textFieldans.setText(Double.toString(al));
+			}
+		});
+		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnNewButton.setBounds(168, 135, 89, 23);
+		frame.getContentPane().add(btnNewButton);
+		textFieldans = new JTextField();
+		textFieldans.setBounds(106, 188, 200, 50);
+		frame.getContentPane().add(textFieldans);
+		textFieldans.setColumns(10);
+		btnNewButton_1 = new JButton("PREDICT2");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				double al2;
+				al2=pass2[1];
+				textFieldans.setText(Double.toString(al2));
+			}
+		});
+		btnNewButton_1.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnNewButton_1.setBounds(37, 135, 89, 23);
+		frame.getContentPane().add(btnNewButton_1);
+		btnNewButton_2 = new JButton("PREDICT3");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				double al3;
+				al3=pass2[2];
+				textFieldans.setText(Double.toString(al3));
+			}
+		});
+		btnNewButton_2.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnNewButton_2.setBounds(318, 135, 89, 23);
+		frame.getContentPane().add(btnNewButton_2);
+		btnNewButton_3 = new JButton("ACTUAL");
+		btnNewButton_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				double ac;
+				ac=low2[19];
+				textFieldans.setText(Double.toString(ac));
+			}
+		});
+		btnNewButton_3.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnNewButton_3.setBounds(168, 84, 89, 23);
+		frame.getContentPane().add(btnNewButton_3);
+		
+		btnActual = new JButton("ACTUAL2");
+		btnActual.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				double ac2;
+				ac2=low2[20];
+				textFieldans.setText(Double.toString(ac2));
+			}
+		});
+		btnActual.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnActual.setBounds(37, 84, 89, 23);
+		frame.getContentPane().add(btnActual);
+		btnNewButton_4 = new JButton("ACTUAL3");
+		btnNewButton_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				double ac3;
+				ac3=low2[21];
+				textFieldans.setText(Double.toString(ac3));
+			}
+		});
+		btnNewButton_4.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnNewButton_4.setBounds(318, 84, 89, 23);
+		frame.getContentPane().add(btnNewButton_4);
+		btnNewButton_5 = new JButton("ACCU2");
+		btnNewButton_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				double acu2;
+				acu2=acc[1];
+				textFieldans.setText(Double.toString(acu2));
+			}
+		});
+		btnNewButton_5.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnNewButton_5.setBounds(37, 30, 89, 23);
+		frame.getContentPane().add(btnNewButton_5);
+		btnNewButton_6 = new JButton("ACCU");
+		btnNewButton_6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				double acu;
+				acu=acc[0];
+				textFieldans.setText(Double.toString(acu));
+			}
+		});
+		btnNewButton_6.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnNewButton_6.setBounds(168, 30, 89, 23);
+		frame.getContentPane().add(btnNewButton_6);
+		btnNewButton_7 = new JButton("ACCU3");
+		btnNewButton_7.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				double acu3;
+				acu3=acc[2];
+				textFieldans.setText(Double.toString(acu3));
+			}
+		});
+		btnNewButton_7.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnNewButton_7.setBounds(318, 30, 89, 23);
+		frame.getContentPane().add(btnNewButton_7);
+	}
+	
+	
+	double bookv[] = {501.63,500.05,498.65,505.38,516.61,521.1900063
+			,523.9678952
+			,526.934161
+			,527.0573783
+			,529.6504124
+			,524.3265695
+			,511.5287151
+			,514.5664195
+			,515.718085
+			,526.0358429
+			,527.6356274
+			,521.4868302
+			,528.2162213
+			,539.8990412
+			,527.6189717
+			,522.6490949
+			,524.24837
+};
+	double bookv2[]=new double[22];
+	static double []low2={495.5
+		,492.93
+		,487.78
+		,495.34
+		,508.26
+		,517.22
+		,516.47
+		,520.9
+		,522.76
+		,524.98
+		,516.23
+		,506.08
+		,509.85
+		,507.92
+		,519.44
+		,521.92
+		,514.84
+		,517.02
+		,534.78
+		,513.31
+		,514.4
+		,518.3
+};
+            
+	static double []high2={507.7,
+		507.07,
+		509.3,
+		515.24,
+		524.83,
+		525.13,
+		531.36,
+		532.9,
+		531.32,
+		534.28,
+		532.3,
+		516.92,
+		519.24,
+		523.4,
+		532.55,
+		533.29,
+		528.05,
+		539.18,
+		544.97,
+		541.55,
+		530.77,
+		530.13
+};
+	double []denorm=new double[EVALUATE_END-EVALUATE_START];
+	static double lowest;
+	static double highest;
+	public swinging() throws Exception
+	{
+		initialize();
+	
+		for(int i=0;i<22;i++)
+		{
+			bookv2[i]=((bookv[i]-low2[i]))/(high2[i]-low2[i]);
+		}
+		
+		lowest=low2[0];
+		highest=high2[0];
+		for (int j = 1; j < low2.length; j++) {
+		if(lowest>=low2[j])
+		{
+			lowest=low2[j];
+		}
+			if(highest<=high2[j])
+			{
+				highest=high2[j];
+			}
+		}
+	}
+	public  int STARTING_DAY = 1;
+	public final static int WINDOW_SIZE = 15;
+	public final static int TRAIN_START = 0;
+	public final static int TRAIN_END = 17;
+	public final static int EVALUATE_START = 18;
+	public final static int EVALUATE_END = 21;
+	public final static double m1=pass2[0];
+	static double[]predict2=new double[EVALUATE_END-EVALUATE_START];
+	public final static double MAX_ERROR = 0.01;
+	private double[] normalizedSunspots;
+	private double[] closedLoopSunspots;
+	private JTextField textFieldans;
+	private JButton btnNewButton_1;
+	private JButton btnNewButton_2;
+	private JButton btnNewButton_3;
+	private JButton btnActual;
+	private JButton btnNewButton_4;
+	private JButton btnNewButton_5;
+	private JButton btnNewButton_6;
+	private JButton btnNewButton_7;
+	public void normalizeSunspots(double lo, double hi) {
+        NormalizeArray norm = new NormalizeArray();
+        norm.setNormalizedHigh( hi);
+        norm.setNormalizedLow( lo);
+
+        // create arrays to hold the normalized sunspots
+        normalizedSunspots = norm.process(bookv2);
+        closedLoopSunspots = EngineArray.arrayCopy(normalizedSunspots);
+        
+	}
+
+	
+	public MLDataSet generateTraining()
+	{
+		TemporalMLDataSet result = new TemporalMLDataSet(WINDOW_SIZE,1);
+		
+		TemporalDataDescription desc = new TemporalDataDescription(
+				TemporalDataDescription.Type.RAW,true,true);
+		result.addDescription(desc);
+		
+		for(int year = TRAIN_START;year<TRAIN_END;year++)
+		{
+			TemporalPoint point = new TemporalPoint(1);
+			point.setSequence(year);
+			point.setData(0, this.normalizedSunspots[year]);
+			result.getPoints().add(point);
+		}
+		
+		result.generate();
+		
+		return result;
+	}
+	
+	public BasicNetwork createNetwork()
+	{
+		BasicNetwork network = new BasicNetwork();
+		network.addLayer(new BasicLayer(WINDOW_SIZE));
+		network.addLayer(new BasicLayer(new ActivationReLU(),true,10));
+		network.addLayer(new BasicLayer(new ActivationSigmoid(),false,1));
+		network.getStructure().finalizeStructure();
+		network.reset();
+		return network;
+	}
+	
+	public void train(BasicNetwork network,MLDataSet training)
+	{
+		final Train train = new ResilientPropagation(network, training);
+
+		int epoch = 1;
+
+		do {
+			train.iteration();
+			/*System.out
+					.println("Epoch #" + epoch + " Error:" + train.getError());*/
+			epoch++;
+		} while(epoch<50);
+	}
+	
+	public void predict(BasicNetwork network) throws Exception
+	{
+		NumberFormat f = NumberFormat.getNumberInstance();
+		f.setMaximumFractionDigits(4);
+		f.setMinimumFractionDigits(4);
+		
+		/*System.out.println("Year\t\tActual\tPredict\tClosed Loop Predict");*/
+		
+		int s=0;
+		for(int year=EVALUATE_START;year<EVALUATE_END;year++)
+		{
+			// calculate based on actual data
+			MLData input = new BasicMLData(WINDOW_SIZE);
+			for(int i=0;i<input.size();i++)
+			{
+				input.setData(i,this.normalizedSunspots[(year-WINDOW_SIZE)+i]);
+			}
+			MLData output = network.compute(input);
+			double prediction = output.getData(0);
+            this.closedLoopSunspots[year] = prediction;
+			
+			// calculate "closed loop", based on predicted data
+			for(int i=0;i<input.size();i++)
+			{
+				input.setData(i,this.closedLoopSunspots[(year-WINDOW_SIZE)+i]);
+			}
+			output = network.compute(input);
+			double closedLoopPrediction = output.getData(0);
+			
+			// display
+			/*System.out.println(("DAY NO."+STARTING_DAY)
+					+"\t"+f.format(this.normalizedSunspots[year])
+					+"\t"+f.format(prediction)
+					
+					+"\t"+f.format(closedLoopPrediction)
+			);*/
+			STARTING_DAY++;
+			predict2[s]=prediction;
+			s++;
+		}
+		}
+		public void run() throws Exception
+	{
+		normalizeSunspots(0.1,0.9);
+		BasicNetwork network = createNetwork();
+		MLDataSet training = generateTraining();
+		train(network,training);
+		predict(network);
+	}
+	}
+	
